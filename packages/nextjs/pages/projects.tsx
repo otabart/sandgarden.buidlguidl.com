@@ -21,6 +21,12 @@ const projects = [
     github: "https://github.com/BuidlGuidl/SpeedRunEthereum",
   },
   {
+    name: "BuidlGuidl L2 testnet",
+    description: "L2 testnet (sepolia) for BuidlGuidl. Powered by the OP Stack.",
+    link: "https://l2.buidlguidl.com/",
+    github: "https://github.com/BuidlGuidl/l2.buidlguidl.com",
+  },
+  {
     name: "ABI Ninja",
     description: "Interact with any contract on Ethereum with a simple interface",
     link: "https://abi.ninja/",
