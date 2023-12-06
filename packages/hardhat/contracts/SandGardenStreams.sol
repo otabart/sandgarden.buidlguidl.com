@@ -10,14 +10,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // _|"""""|_|"""""| {======|_|"""""|_|"""""|_|"""""|_|"""""| {======|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|
 // "`-0-0-'"`-0-0-'./o--000'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'./o--000'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'
 
-contract YourContract is Ownable {
+contract SandGardenStreams is Ownable {
 
     struct BuilderStreamInfo {
         uint256 cap;
         uint256 last;
     }
     mapping(address => BuilderStreamInfo) public streamedBuilders;
-    // ToDo. Change to 30 days
     uint256 public frequency = 2592000; // 30 days
 
     event Withdraw(address indexed to, uint256 amount, string reason);

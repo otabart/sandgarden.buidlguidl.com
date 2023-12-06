@@ -23,7 +23,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  await deploy("YourContract", {
+  await deploy("SandGardenStreams", {
     from: deployer,
     // Contract constructor arguments
     args: [],
@@ -33,7 +33,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     autoMine: true,
   });
 
-  const yourContract = await hre.ethers.getContract("YourContract", deployer);
+  const yourContract = await hre.ethers.getContract("SandGardenStreams", deployer);
 
   console.log("🫡 adding batch of builders");
   const builderStakes = Array(builderList.length).fill(ethers.utils.parseEther("1.5"));
