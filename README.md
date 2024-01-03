@@ -1,20 +1,16 @@
-# Hacker Houses Streams
+# 👾 Sand Garden Website 
 
-We're running an experiment to retroactively fund open-source work by providing a monthly UBI to open-source developers, handpicked by Jessy and Jessy's Hacker House, and rewarding them for their ongoing contributions to the ecosystem.
+We're running an experiment to fund focused, high-leverage open-source work by providing a monthly UBI to developers, handpicked by Carlos & BG Sand Garden, rewarding them for their ongoing contributions to BuidlGuidl and the Ethereum Ecosystem.
 
-Chosen developers can submit their monthly projects, automatically claim grant streams, and showcase their work to the public.
+Our emphasis is on quality over quantity, striving for well-crafted products. Our approach embraces iteration, refining our builds while fostering a culture of continuous learning and improvement.
 
 This initiative is made possible by BuidlGuidl!
 
-When forking, TLDR:
-- Paste your builder's addresses into `builderList.ts`.
-- Check the contract deploy script in `packages/hardhat/deploy/00_deploy_your_contract.ts`.
-- Make sure to check `packages/nextjs/scaffold.config.ts`.
-  - You might want to change `targetNetwork` to `chains.hardhat` for local testing.
-- When you deploy to a live network, copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_DEPLOY_BLOCK` to the right value (it optimizes the reading of events)
-  - Make sure to add that ENVAR to your Vercel project as well.
+Read more at the [F.A.Q](https://sandgarden.buidlguidl.com/faq)
 
-## Contents
+---
+
+## Development
 
 - [Requirements](#requirements)
 - [Quickstart](#Quickstart)
@@ -39,8 +35,8 @@ To get started follow the steps below:
 1. Clone/Fork this repo & install dependencies
 
 ```
-git clone https://github.com/buidlguidl/hacker-houses-streams.git
-cd hacker-houses-streams
+git clone https://github.com/buidlguidl/.git
+cd sandgarden.buidlguidl.com
 yarn install
 ```
 
@@ -79,16 +75,16 @@ Once you are ready to deploy your smart contracts, there are a few things you ne
 
 1. Select the network
 
-By default, ```yarn deploy``` will deploy the contract to the local network. You can change the defaultNetwork in `packages/hardhat/hardhat.config.js.` You could also simply run ```yarn deploy --network target_network``` to deploy to another network.
+By default, ```yarn deploy``` will deploy the contract to the local network. You can change the defaultNetwork in `packages/hardhat/hardhat.config.js.` You could also simply run ```yarn deploy --network target_network``` to deploy to another network.
 
-Check the `hardhat.config.js` for the networks that are pre-configured. You can also add other network settings to the `hardhat.config.js file`. Here are the [Alchemy docs](https://docs.alchemy.com/docs/how-to-add-alchemy-rpc-endpoints-to-metamask) for information on specific networks.
+Check the `hardhat.config.js` for the networks that are pre-configured. You can also add other network settings to the `hardhat.config.js file`. Here are the [Alchemy docs](https://docs.alchemy.com/docs/how-to-add-alchemy-rpc-endpoints-to-metamask) for information on specific networks.
 
 Example: To deploy the contract to the Sepolia network, run the command below:
 ```
 yarn deploy --network sepolia
 ```
 
-2. Generate a new account or add one to deploy the contract(s) from. Additionally you will need to add your Alchemy API key. Rename `.env.example` to `.env` and fill the required keys.
+2. Generate a new account or add one to deploy the contract(s) from. Additionally you will need to add your Alchemy API key. Rename `.env.example` to `.env` and fill the required keys.
 
 ```
 ALCHEMY_API_KEY="",
@@ -97,7 +93,7 @@ DEPLOYER_PRIVATE_KEY=""
 
 The deployer account is the account that will deploy your contracts. Additionally, the deployer account will be used to execute any function calls that are part of your deployment script.
 
-You can generate a random account / private key with ```yarn generate``` or add the private key of your crypto wallet. ```yarn generate``` will create a random account and add the DEPLOYER_PRIVATE_KEY to the .env file. You can check the generated account with ```yarn account```.
+You can generate a random account / private key with ```yarn generate``` or add the private key of your crypto wallet. ```yarn generate``` will create a random account and add the DEPLOYER_PRIVATE_KEY to the .env file. You can check the generated account with ```yarn account```.
 
 3. Deploy your smart contract(s)
 
