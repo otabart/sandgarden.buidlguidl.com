@@ -37,31 +37,8 @@ module.exports = {
   theme: {
     // Extend Tailwind classes (e.g. font-bai-jamjuree, animate-grow)
     extend: {
-      fontFamily: {
-        "bai-jamjuree": ["Bai Jamjuree", "sans-serif"],
-      },
-      keyframes: {
-        grow: {
-          "0%": {
-            width: "0%",
-          },
-          "100%": {
-            width: "100%",
-          },
-        },
-        zoom: {
-          "0%, 100%": { transform: "scale(1, 1)" },
-          "50%": { transform: "scale(1.1, 1.1)" },
-        },
-      },
       animation: {
-        grow: "grow 5s linear infinite",
         "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        zoom: "zoom 1s ease infinite",
-      },
-      backgroundImage: {
-        hacker:
-          "linear-gradient(90deg, #3B76FF 0%, #43D29B 20.16%, #C1EA2E 40.32%, #FFBF2D 58.89%, #FF3841 80.65%, #805C91 101.87%);",
       },
     },
   },

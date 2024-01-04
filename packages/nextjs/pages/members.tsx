@@ -124,7 +124,7 @@ const Members: NextPage = () => {
 
       <input type="checkbox" id="withdraw-modal" className="modal-toggle" />
       <label htmlFor="withdraw-modal" className="modal cursor-pointer">
-        <label className="modal-box relative bg-primary">
+        <label className="modal-box relative bg-primary shadow shadow-primary">
           {/* dummy input to capture event onclick on modal box */}
           <input className="h-0 w-0 absolute top-0 left-0" />
           <h3 className="text-xl font-bold mb-8">Withdraw from your stream</h3>
@@ -150,7 +150,7 @@ const Members: NextPage = () => {
       </label>
       <input type="checkbox" id="withdraw-events-modal" className="modal-toggle" />
       <label htmlFor="withdraw-events-modal" className="modal cursor-pointer">
-        <label className="modal-box relative">
+        <label className="modal-box relative max-w-4xl shadow shadow-primary">
           {/* dummy input to capture event onclick on modal box */}
           <input className="h-0 w-0 absolute top-0 left-0" />
           <h3 className="text-xl font-bold mb-8">
