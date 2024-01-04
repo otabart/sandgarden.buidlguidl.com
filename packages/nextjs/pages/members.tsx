@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { StreamContractInfo } from "~~/components/StreamContractInfo";
 import { Address, EtherInput } from "~~/components/scaffold-eth";
 import { useScaffoldContractRead, useScaffoldContractWrite, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
 
 const Members: NextPage = () => {
   const [reason, setReason] = useState("");
@@ -14,28 +15,43 @@ const Members: NextPage = () => {
   const [builderList, setBuilderList] = useState<string[]>([]);
 
   const { data: allBuildersData, isLoading: isLoadingBuilderData } = useScaffoldContractRead({
-    contractName: "YourContract",
+    contractName: "SandGardenStreams",
     functionName: "allBuildersData",
     args: [builderList],
   });
 
   const { writeAsync: doWithdraw } = useScaffoldContractWrite({
-    contractName: "YourContract",
+    contractName: "SandGardenStreams",
     functionName: "streamWithdraw",
     args: [ethers.utils.parseEther(amount || "0"), reason],
   });
 
-  const { data: withdrawEvents } = useScaffoldEventHistory({
-    contractName: "YourContract",
+  const { data: newContractWithdrawEvents, isLoading: isLoadingNewContractWithdrawEvents } = useScaffoldEventHistory({
+    contractName: "SandGardenStreams",
     eventName: "Withdraw",
-    fromBlock: Number(process.env.NEXT_PUBLIC_DEPLOY_BLOCK) || 0,
+    fromBlock: scaffoldConfig.contracts.SandGardenStreams.fromBlock,
     blockData: true,
   });
 
+  const { data: oldContractWithdrawEvents, isLoading: isLoadingOldContractWithdrawEvents } = useScaffoldEventHistory({
+    contractName: "_SandGardenStreamsOld",
+    eventName: "Withdraw",
+    fromBlock: scaffoldConfig.contracts._SandGardenStreamsOld.fromBlock,
+    blockData: true,
+  });
+
+  const sortedWithdrawEvents = useMemo(
+    () =>
+      [...(newContractWithdrawEvents || []), ...(oldContractWithdrawEvents || [])].sort(
+        (a: any, b: any) => b.block.number - a.block.number,
+      ),
+    [newContractWithdrawEvents, oldContractWithdrawEvents],
+  );
+
   const { data: addBuilderEvents, isLoading: isLoadingBuilderEvents } = useScaffoldEventHistory({
-    contractName: "YourContract",
+    contractName: "SandGardenStreams",
     eventName: "AddBuilder",
-    fromBlock: Number(process.env.NEXT_PUBLIC_DEPLOY_BLOCK) || 0,
+    fromBlock: scaffoldConfig.contracts.SandGardenStreams.fromBlock,
   });
 
   useEffect(() => {
@@ -44,6 +60,12 @@ const Members: NextPage = () => {
       setBuilderList(fetchedBuilderList);
     }
   }, [addBuilderEvents]);
+
+  useEffect(() => {
+    if (selectedAddress) {
+      setFilteredEvents(sortedWithdrawEvents?.filter((event: any) => event.args.to === selectedAddress) || []);
+    }
+  }, [selectedAddress, sortedWithdrawEvents]);
 
   const sortedBuilders = allBuildersData && [...allBuildersData].reverse();
 
@@ -86,9 +108,6 @@ const Members: NextPage = () => {
                         className="cursor-pointer"
                         onClick={() => {
                           setSelectedAddress(builderData.builderAddress);
-                          setFilteredEvents(
-                            withdrawEvents?.filter((event: any) => event.args.to === builderData.builderAddress) || [],
-                          );
                         }}
                       >
                         <Address address={builderData.builderAddress} disableAddressLink={true} />
@@ -116,7 +135,7 @@ const Members: NextPage = () => {
             <div className="flex flex-col gap-6 items-center">
               <input
                 type="text"
-                className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 w-full font-medium placeholder:text-accent/50 text-gray-400 border-2 border-base-300 bg-base-200 rounded-full text-accent"
+                className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 w-full font-medium placeholder:text-accent/50 border-2 border-base-300 bg-base-200 rounded-full text-accent"
                 placeholder="Reason for withdrawing & links"
                 value={reason}
                 onChange={event => setReason(event.target.value)}
@@ -143,7 +162,12 @@ const Members: NextPage = () => {
           </label>
           <div className="space-y-3">
             <ul>
-              {filteredEvents.length > 0 ? (
+              {isLoadingNewContractWithdrawEvents || isLoadingOldContractWithdrawEvents ? (
+                <div>
+                  <div className="text-4xl animate-bounce mb-2">👾</div>
+                  <div className="text-lg loading-dots">Loading...</div>
+                </div>
+              ) : filteredEvents.length > 0 ? (
                 <div className="flex flex-col">
                   {filteredEvents.map(event => (
                     <div key={event.log.transactionHash} className="flex flex-col">

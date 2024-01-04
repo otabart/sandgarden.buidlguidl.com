@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ethers } from "ethers";
@@ -6,6 +6,7 @@ import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
 
 const projects = [
   {
@@ -55,14 +56,27 @@ const projects = [
 const githubApiUri = "https://api.github.com/repos";
 
 const Projects: NextPage = () => {
-  const { data: withdrawEvents, isLoading: isLoadingWithdrawEvents } = useScaffoldEventHistory({
-    contractName: "YourContract",
+  const { data: newContractWithdrawEvents, isLoading: isLoadingNewContractWithdrawEvents } = useScaffoldEventHistory({
+    contractName: "SandGardenStreams",
     eventName: "Withdraw",
-    fromBlock: Number(process.env.NEXT_PUBLIC_DEPLOY_BLOCK) || 0,
+    fromBlock: scaffoldConfig.contracts.SandGardenStreams.fromBlock,
     blockData: true,
   });
 
-  const sortedWithdrawEvents = withdrawEvents?.sort((a: any, b: any) => b.block.number - a.block.number);
+  const { data: oldContractWithdrawEvents, isLoading: isLoadingOldContractWithdrawEvents } = useScaffoldEventHistory({
+    contractName: "_SandGardenStreamsOld",
+    eventName: "Withdraw",
+    fromBlock: scaffoldConfig.contracts._SandGardenStreamsOld.fromBlock,
+    blockData: true,
+  });
+
+  const sortedWithdrawEvents = useMemo(
+    () =>
+      [...(newContractWithdrawEvents || []), ...(oldContractWithdrawEvents || [])].sort(
+        (a: any, b: any) => b.block.number - a.block.number,
+      ),
+    [newContractWithdrawEvents, oldContractWithdrawEvents],
+  );
 
   type LastUpdateType = {
     [key: string]: string;
@@ -124,7 +138,7 @@ const Projects: NextPage = () => {
           })}
         </div>
         <h2 className="font-bold mb-2 text-xl text-secondary">Recent Contributions</h2>
-        {isLoadingWithdrawEvents ? (
+        {isLoadingNewContractWithdrawEvents || isLoadingOldContractWithdrawEvents ? (
           <div className="m-10">
             <div className="text-5xl animate-bounce mb-2">👾</div>
             <div className="text-lg loading-dots">Loading...</div>

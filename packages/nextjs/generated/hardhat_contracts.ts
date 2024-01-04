@@ -4,7 +4,7 @@ export default {
       name: "optimism",
       chainId: "10",
       contracts: {
-        YourContract: {
+        _SandGardenStreamsOld: {
           address: "0x2eA63c9C9C114ae85b1027697A906420a23e8572",
           abi: [
             {
