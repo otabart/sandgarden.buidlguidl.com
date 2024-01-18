@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { StreamContractInfo } from "~~/components/StreamContractInfo";
 import { Address, EtherInput } from "~~/components/scaffold-eth";
 import { useScaffoldContractRead, useScaffoldContractWrite, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { useCohortWithdrawEvents } from "~~/hooks/useCohortWithdrawEvents";
 import scaffoldConfig from "~~/scaffold.config";
 
 const Members: NextPage = () => {
@@ -26,27 +27,7 @@ const Members: NextPage = () => {
     args: [ethers.utils.parseEther(amount || "0"), reason],
   });
 
-  const { data: newContractWithdrawEvents, isLoading: isLoadingNewContractWithdrawEvents } = useScaffoldEventHistory({
-    contractName: "SandGardenStreams",
-    eventName: "Withdraw",
-    fromBlock: scaffoldConfig.contracts.SandGardenStreams.fromBlock,
-    blockData: true,
-  });
-
-  const { data: oldContractWithdrawEvents, isLoading: isLoadingOldContractWithdrawEvents } = useScaffoldEventHistory({
-    contractName: "_SandGardenStreamsOld",
-    eventName: "Withdraw",
-    fromBlock: scaffoldConfig.contracts._SandGardenStreamsOld.fromBlock,
-    blockData: true,
-  });
-
-  const sortedWithdrawEvents = useMemo(
-    () =>
-      [...(newContractWithdrawEvents || []), ...(oldContractWithdrawEvents || [])].sort(
-        (a: any, b: any) => b.block.number - a.block.number,
-      ),
-    [newContractWithdrawEvents, oldContractWithdrawEvents],
-  );
+  const { data: allWithdrawEvents, isLoading: isWithdrawEventsLoading } = useCohortWithdrawEvents();
 
   const { data: addBuilderEvents, isLoading: isLoadingBuilderEvents } = useScaffoldEventHistory({
     contractName: "SandGardenStreams",
@@ -63,9 +44,9 @@ const Members: NextPage = () => {
 
   useEffect(() => {
     if (selectedAddress) {
-      setFilteredEvents(sortedWithdrawEvents?.filter((event: any) => event.args.to === selectedAddress) || []);
+      setFilteredEvents(allWithdrawEvents?.filter((event: any) => event.builder === selectedAddress) || []);
     }
-  }, [selectedAddress, sortedWithdrawEvents]);
+  }, [selectedAddress, allWithdrawEvents]);
 
   const sortedBuilders = allBuildersData && [...allBuildersData].reverse();
 
@@ -162,7 +143,7 @@ const Members: NextPage = () => {
           </label>
           <div className="space-y-3">
             <ul>
-              {isLoadingNewContractWithdrawEvents || isLoadingOldContractWithdrawEvents ? (
+              {isWithdrawEventsLoading ? (
                 <div>
                   <div className="text-4xl animate-bounce mb-2">👾</div>
                   <div className="text-lg loading-dots">Loading...</div>
@@ -170,16 +151,15 @@ const Members: NextPage = () => {
               ) : filteredEvents.length > 0 ? (
                 <div className="flex flex-col">
                   {filteredEvents.map(event => (
-                    <div key={event.log.transactionHash} className="flex flex-col">
+                    <div key={event.id} className="flex flex-col">
                       <div>
                         <span className="font-bold">Date: </span>
-                        {new Date(event.block.timestamp * 1000).toISOString().split("T")[0]}
+                        {new Date(event.timestamp * 1000).toISOString().split("T")[0]}
                       </div>
                       <div>
-                        <span className="font-bold">Amount: </span>Ξ{" "}
-                        {ethers.utils.formatEther(event.args.amount.toString())}
+                        <span className="font-bold">Amount: </span>Ξ {event.amount}
                       </div>
-                      <div>{event.args.reason}</div>
+                      <div>{event.reason}</div>
                       <hr className="my-8" />
                     </div>
                   ))}

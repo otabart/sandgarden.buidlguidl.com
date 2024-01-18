@@ -1,12 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ethers } from "ethers";
 import { DateTime } from "luxon";
 import type { NextPage } from "next";
 import { Address } from "~~/components/scaffold-eth";
-import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
-import scaffoldConfig from "~~/scaffold.config";
+import { useCohortWithdrawEvents } from "~~/hooks/useCohortWithdrawEvents";
 
 const projects = [
   {
@@ -56,27 +54,7 @@ const projects = [
 const githubApiUri = "https://api.github.com/repos";
 
 const Projects: NextPage = () => {
-  const { data: newContractWithdrawEvents, isLoading: isLoadingNewContractWithdrawEvents } = useScaffoldEventHistory({
-    contractName: "SandGardenStreams",
-    eventName: "Withdraw",
-    fromBlock: scaffoldConfig.contracts.SandGardenStreams.fromBlock,
-    blockData: true,
-  });
-
-  const { data: oldContractWithdrawEvents, isLoading: isLoadingOldContractWithdrawEvents } = useScaffoldEventHistory({
-    contractName: "_SandGardenStreamsOld",
-    eventName: "Withdraw",
-    fromBlock: scaffoldConfig.contracts._SandGardenStreamsOld.fromBlock,
-    blockData: true,
-  });
-
-  const sortedWithdrawEvents = useMemo(
-    () =>
-      [...(newContractWithdrawEvents || []), ...(oldContractWithdrawEvents || [])].sort(
-        (a: any, b: any) => b.block.number - a.block.number,
-      ),
-    [newContractWithdrawEvents, oldContractWithdrawEvents],
-  );
+  const { data: allWithdrawEvents, isLoading: isWithdrawEventsLoading } = useCohortWithdrawEvents();
 
   type LastUpdateType = {
     [key: string]: string;
@@ -138,33 +116,33 @@ const Projects: NextPage = () => {
           })}
         </div>
         <h2 className="font-bold mb-2 text-xl text-secondary">Recent Contributions</h2>
-        {isLoadingNewContractWithdrawEvents || isLoadingOldContractWithdrawEvents ? (
+        {isWithdrawEventsLoading ? (
           <div className="m-10">
             <div className="text-5xl animate-bounce mb-2">👾</div>
             <div className="text-lg loading-dots">Loading...</div>
           </div>
         ) : (
           <>
-            {sortedWithdrawEvents?.length === 0 && (
+            {allWithdrawEvents?.length === 0 && (
               <div className="my-2">
                 <p>No contributions yet!</p>
               </div>
             )}
-            {sortedWithdrawEvents?.map((event: any) => {
+            {allWithdrawEvents?.map((event: any) => {
               return (
                 <div
                   className="flex flex-col gap-1 mb-6"
-                  key={`${event.log.address}_${event.log.blockNumber}`}
-                  data-test={`${event.log.address}_${event.log.blockNumber}`}
+                  key={`${event.builder}_${event.timestamp}`}
+                  data-test={`${event.builderAddress}_${event.timestamp}`}
                 >
                   <div>
-                    <Address address={event.args.to} />
+                    <Address address={event.builder} />
                   </div>
                   <div>
-                    <strong>{new Date(event.block.timestamp * 1000).toISOString().split("T")[0]}</strong>
+                    <strong>{new Date(event.timestamp * 1000).toISOString().split("T")[0]}</strong>
                   </div>
                   <div>
-                    Ξ {ethers.utils.formatEther(event.args.amount)} / {event.args.reason}
+                    Ξ {event.amount} / {event.reason}
                   </div>
                 </div>
               );
