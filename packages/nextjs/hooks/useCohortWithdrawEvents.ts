@@ -8,7 +8,6 @@ const WithdrawalsQuery = gql`
       builder
       amount
       timestamp
-      builder
       id
     }
   }

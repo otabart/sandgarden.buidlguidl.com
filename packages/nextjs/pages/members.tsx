@@ -3,9 +3,9 @@ import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { StreamContractInfo } from "~~/components/StreamContractInfo";
 import { Address, EtherInput } from "~~/components/scaffold-eth";
-import { useScaffoldContractRead, useScaffoldContractWrite, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useAddBuilderEvents } from "~~/hooks/useCohortAddBuilderEvents";
 import { useCohortWithdrawEvents } from "~~/hooks/useCohortWithdrawEvents";
-import scaffoldConfig from "~~/scaffold.config";
 
 const Members: NextPage = () => {
   const [reason, setReason] = useState("");
@@ -29,15 +29,11 @@ const Members: NextPage = () => {
 
   const { data: allWithdrawEvents, isLoading: isWithdrawEventsLoading } = useCohortWithdrawEvents();
 
-  const { data: addBuilderEvents, isLoading: isLoadingBuilderEvents } = useScaffoldEventHistory({
-    contractName: "SandGardenStreams",
-    eventName: "AddBuilder",
-    fromBlock: scaffoldConfig.contracts.SandGardenStreams.fromBlock,
-  });
+  const { data: addBuilderEvents, isLoading: isLoadingBuilderEvents } = useAddBuilderEvents();
 
   useEffect(() => {
     if (addBuilderEvents && addBuilderEvents.length > 0) {
-      const fetchedBuilderList = addBuilderEvents.map((event: any) => event.args.to);
+      const fetchedBuilderList = addBuilderEvents.map((event: any) => event.id.split("-")[0]);
       setBuilderList(fetchedBuilderList);
     }
   }, [addBuilderEvents]);
@@ -47,8 +43,6 @@ const Members: NextPage = () => {
       setFilteredEvents(allWithdrawEvents?.filter((event: any) => event.builder === selectedAddress) || []);
     }
   }, [selectedAddress, allWithdrawEvents]);
-
-  const sortedBuilders = allBuildersData && [...allBuildersData].reverse();
 
   return (
     <>
@@ -66,7 +60,7 @@ const Members: NextPage = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-6">
-              {sortedBuilders?.map(builderData => {
+              {allBuildersData?.map(builderData => {
                 if (builderData.cap.isZero()) return;
                 const cap = ethers.utils.formatEther(builderData.cap || 0);
                 const unlocked = ethers.utils.formatEther(builderData.unlockedAmount || 0);
