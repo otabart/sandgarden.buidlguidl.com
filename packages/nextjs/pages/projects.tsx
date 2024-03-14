@@ -49,6 +49,12 @@ const projects = [
     link: "https://buidlguidl.com/",
     github: "https://github.com/scaffold-eth/buidlguidl-v3",
   },
+  {
+    name: "BuidlGuidl Grants",
+    description: "BG grants is a platform for funding open-source work in the Ethereum ecosystem",
+    link: "https://grants.buidlguidl.com",
+    github: "https://github.com/buidlGuidl/grants.buidlguidl.com",
+  },
 ];
 
 const githubApiUri = "https://api.github.com/repos";
