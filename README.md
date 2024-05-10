@@ -28,6 +28,15 @@ Before you begin, you need to install the following tools:
 - [Yarn (v1.x)](https://classic.yarnpkg.com/en/docs/install/)
 - [Git](https://git-scm.com/downloads)
 
+**Indexer**
+
+We are using Ponder for indexing cohorts events (adding builders, withdrawals, etc). Check out the [BG Ponder instance](https://github.com/BuidlGuidl/bg-ponder-indexer) for more information.
+
+You have 3 options:
+1. Run your own Ponder instance (configure the URL in `packages/nextjs/_app.tsx`)
+2. Use the BG Ponder instance (make a [PR](https://github.com/BuidlGuidl/bg-ponder-indexer) with your cohorts contract address)
+3. Rollback to fetching events with SE-2 hooks (check out PRs [#6](https://github.com/BuidlGuidl/sandgarden.buidlguidl.com/pull/6) and [#7](https://github.com/BuidlGuidl/sandgarden.buidlguidl.com/pull/7))
+
 ## Quickstart
 
 To get started follow the steps below:
