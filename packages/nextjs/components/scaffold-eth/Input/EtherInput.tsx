@@ -4,6 +4,7 @@ import { CommonInputProps, InputBase, SIGNED_NUMBER_REGEX } from "~~/components/
 import { useAppStore } from "~~/services/store/store";
 
 const MAX_DECIMALS_USD = 2;
+const MAX_DECIMALS_ETH = 18;
 
 function etherValueToDisplayValue(usdMode: boolean, etherValue: string, ethPrice: number) {
   if (usdMode && ethPrice) {
@@ -28,7 +29,7 @@ function displayValueToEtherValue(usdMode: boolean, displayValue: string, ethPri
       return displayValue;
     } else {
       // Compute the ETH value if a valid number.
-      return (parsedDisplayValue / ethPrice).toString();
+      return (parsedDisplayValue / ethPrice).toFixed(MAX_DECIMALS_ETH).replace(/\.?0+$/, "");
     }
   } else {
     return displayValue;
