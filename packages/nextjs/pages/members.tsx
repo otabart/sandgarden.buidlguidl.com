@@ -108,9 +108,8 @@ const Members: NextPage = () => {
           </label>
           <div className="space-y-3">
             <div className="flex flex-col gap-6 items-center">
-              <input
-                type="text"
-                className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 w-full font-medium placeholder:text-accent/50 border-2 border-base-300 bg-base-200 rounded-full text-accent"
+              <textarea
+                className="textarea textarea-ghost focus:outline-none min-h-[200px] focus:bg-transparent px-4 w-full font-medium placeholder:text-accent/50 border-2 border-base-300 bg-base-200 rounded-3xl text-accent"
                 placeholder="Reason for withdrawing & links"
                 value={reason}
                 onChange={event => setReason(event.target.value)}
