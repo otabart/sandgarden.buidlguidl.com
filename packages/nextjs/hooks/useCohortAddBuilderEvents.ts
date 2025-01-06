@@ -4,7 +4,9 @@ import contracts from "~~/generated/hardhat_contracts";
 const BuildersQuery = gql`
   query Builders($cohortAddress: String!) {
     cohortBuilders(where: { cohortContractAddress: $cohortAddress }, orderBy: "timestamp", orderDirection: "desc") {
-      id
+      items {
+        id
+      }
     }
   }
 `;
@@ -17,6 +19,6 @@ export const useAddBuilderEvents = () => {
     },
   });
 
-  const data = addBuilderEventsData?.cohortBuilders || [];
+  const data = addBuilderEventsData?.cohortBuilders.items || [];
   return { data, isLoading };
 };
